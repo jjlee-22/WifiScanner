@@ -55,22 +55,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (String str : resultsList) {
             // Creating matcher object
             Matcher m = r.matcher(str);
-            //String tmp = m.group(3);
             if (m.find()) {
-                LatLng point1 = new LatLng(Double.parseDouble(m.group(3)),Double.parseDouble(m.group(4)));
-                mMap.addMarker(new MarkerOptions().position(point1).title(m.group(2)));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(point1));
-            } else {
-                LatLng sydney = new LatLng(-34, 151);
-                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                LatLng coordinates = new LatLng(Double.parseDouble(m.group(3)), Double.parseDouble(m.group(4)));
+                mMap.addMarker(new MarkerOptions().position(coordinates).title(m.group(2)).draggable(true));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
             }
         }
 
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
-
 }
