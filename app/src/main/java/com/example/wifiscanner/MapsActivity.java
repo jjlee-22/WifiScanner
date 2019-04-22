@@ -2,6 +2,7 @@ package com.example.wifiscanner;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.content.Intent;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -9,14 +10,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import android.content.Intent;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ArrayList<String> resultsList = new ArrayList<>();
+    private String pattern = "((.*?)<(.*?)(-.*))";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +45,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Intent intent = new Intent();
-        resultsList = intent.getStringArrayListExtra("resultsList");
+        Intent intent = getIntent();
+        Bundle args = intent.getBundleExtra("BUNDLE");
+        ArrayList<String> resultsList = (ArrayList<String>) args.getSerializable("ARRAYLIST");
+
+        // Creating pattern object
+        Pattern r = Pattern.compile(pattern);
+
+        for (String str : resultsList) {
+            // Creating matcher object
+            Matcher m = r.matcher(str);
+            //String tmp = m.group(3);
+            if (m.find()) {
+                LatLng point1 = new LatLng(Double.parseDouble(m.group(3)),Double.parseDouble(m.group(4)));
+                mMap.addMarker(new MarkerOptions().position(point1).title(m.group(2)));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(point1));
+            } else {
+                LatLng sydney = new LatLng(-34, 151);
+                mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            }
+        }
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+
 }

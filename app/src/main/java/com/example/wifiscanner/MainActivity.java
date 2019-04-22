@@ -17,7 +17,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+import java.io.Serializable;
+
+public class MainActivity extends AppCompatActivity implements Serializable {
 
     private WifiManager wifiManager; // Creates a new WifiManager object called wifiManager
     private ListView listView; // Create a new ListView object called listView
@@ -99,7 +101,9 @@ public class MainActivity extends AppCompatActivity{
         // Intent is just simple message object that is used to communicate between android components such as activities, content providers, data, broadcast receivers and services.
         // Learn more about intent here, https://acadgild.com/blog/intent-in-android-introduction
         Intent intent = new Intent(this, MapsActivity.class);
-        intent.getStringArrayListExtra("resultsList");
+        Bundle args = new Bundle();
+        args.putSerializable("ARRAYLIST", (Serializable)resultsList);
+        intent.putExtra("BUNDLE", args);
         startActivity(intent); // The method startActivity() is from the imported Activity class (android.support.v7.app.AppCompatActivity, more specifically)
     }
 
@@ -116,8 +120,8 @@ public class MainActivity extends AppCompatActivity{
             // Populates the arrayList with its scan results
             for (ScanResult scanResult : results) {
                 // Displays SSID (the name of the wifi hotspot) and capabilities (Security information)
-                arrayList.add(scanResult.SSID + " - " + latitude + longitude);
-                resultsList.add(scanResult.SSID + latitude + longitude);
+                arrayList.add(scanResult.SSID + "-" + latitude + longitude);
+                resultsList.add(scanResult.SSID + "<" + latitude + longitude);
                 adapter.notifyDataSetChanged(); // adapter needs to know that you changes the List in the activity
             }
         }
