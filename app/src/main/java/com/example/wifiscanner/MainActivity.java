@@ -26,7 +26,10 @@ public class MainActivity extends AppCompatActivity{
     private int size = 0;
     private List<ScanResult> results; // Creates a new List object(ScanResult type) called results
     private ArrayList<String> arrayList = new ArrayList<>(); // Creates an ArrayList object(String type) called arrayList
+    private ArrayList<String> resultsList = new ArrayList<>(); // Creates an ArrayList object(String type) called resultsList
     private ArrayAdapter adapter; // Creates a new ArrayAdapter object called ArrayAdapter
+
+    private double latitude, longitude;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,11 @@ public class MainActivity extends AppCompatActivity{
      */
     private void scanWifi() {
         arrayList.clear();
+
+        GPSTracker gps = new GPSTracker(this);
+        latitude = gps.getLatitude();
+        longitude = gps.getLongitude();
+
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)); // What the hell is this
         wifiManager.startScan(); // Triggers a scan request
         Toast.makeText(this, "Scanning WiFi ...", Toast.LENGTH_SHORT).show(); // Toast is that little notification pop up that disappears after a short time
@@ -91,8 +99,8 @@ public class MainActivity extends AppCompatActivity{
         // Intent is just simple message object that is used to communicate between android components such as activities, content providers, data, broadcast receivers and services.
         // Learn more about intent here, https://acadgild.com/blog/intent-in-android-introduction
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.getStringArrayListExtra("resultsList");
         startActivity(intent); // The method startActivity() is from the imported Activity class (android.support.v7.app.AppCompatActivity, more specifically)
-
     }
 
     // Creates new BroadcastReceiver object called wifiReceiver
@@ -102,12 +110,14 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onReceive(Context context, Intent intent) {
             results = wifiManager.getScanResults(); // Gets the latest found wifi hotspot put into object list results
+
             unregisterReceiver(this);
 
             // Populates the arrayList with its scan results
             for (ScanResult scanResult : results) {
                 // Displays SSID (the name of the wifi hotspot) and capabilities (Security information)
-                arrayList.add(scanResult.SSID + " - " + scanResult.capabilities);
+                arrayList.add(scanResult.SSID + " - " + latitude + longitude);
+                resultsList.add(scanResult.SSID + latitude + longitude);
                 adapter.notifyDataSetChanged(); // adapter needs to know that you changes the List in the activity
             }
         }
