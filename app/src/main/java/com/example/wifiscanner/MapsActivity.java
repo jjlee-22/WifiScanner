@@ -58,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (m.find()) {
                 LatLng coordinates = new LatLng(Double.parseDouble(m.group(3)), Double.parseDouble(m.group(4)));
                 mMap.addMarker(new MarkerOptions().position(coordinates).title(m.group(2)).draggable(true));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 16.0f));
             }
         }
 

@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private ListView listView; // Create a new ListView object called listView
     private Button buttonScan; // Creates a new Button object called buttonScan
     private Button buttonPlot; // Creates a new Button object called buttonPlot
+    private Button buttonWar;
     private int size = 0;
     private List<ScanResult> results; // Creates a new List object(ScanResult type) called results
     private ArrayList<String> arrayList = new ArrayList<>(); // Creates an ArrayList object(String type) called arrayList
@@ -57,6 +58,14 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             public void onClick(View view) {
                 launchMapsActivity();
             }
+        });
+
+        buttonWar = findViewById(R.id.warBtn);
+        buttonWar.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               launchWarActivity();
+           }
         });
 
         listView = findViewById(R.id.wifiList); // Sets listView to be bound to the UI wifiList element specified on the XML file
@@ -105,6 +114,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         args.putSerializable("ARRAYLIST", (Serializable)resultsList);
         intent.putExtra("BUNDLE", args);
         startActivity(intent); // The method startActivity() is from the imported Activity class (android.support.v7.app.AppCompatActivity, more specifically)
+    }
+
+    private void launchWarActivity() {
+        Intent intent = new Intent(this, WarDriveActivity.class);
+        startActivity(intent);
     }
 
     // Creates new BroadcastReceiver object called wifiReceiver
