@@ -28,8 +28,12 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
     private List<ScanResult> results;
     private TextView textView;
     private Button buttonPlot;
-    private GPSTracker gps = new GPSTracker(this);
-    private boolean scan = true;
+    private GPSTracker gps;
+    private int tmp;
+
+    private volatile boolean scan = true;
+
+    private Bundle args = new Bundle();
 
     Thread thread1;
 
@@ -45,6 +49,7 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
         buttonPlot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                scan = false;
                 launchMapsActivity();
             }
         });
@@ -57,6 +62,7 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
 
 
     private void collectWifi() {
+        gps = new GPSTracker(this);
 
         thread1 = new Thread(new Runnable() {
             @Override
@@ -70,8 +76,10 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
                                 textView.setText(Integer.toString(resultsList.size()));
                             }
                         });
+
                         latitude = gps.getLatitude();
                         longitude = gps.getLongitude();
+
                         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)); // What the hell is this
                         wifiManager.startScan(); // Triggers a scan request
                         Thread.sleep(5000);
@@ -91,7 +99,6 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
         // Intent is just simple message object that is used to communicate between android components such as activities, content providers, data, broadcast receivers and services.
         // Learn more about intent here, https://acadgild.com/blog/intent-in-android-introduction
         Intent intent = new Intent(this, MapsActivity.class);
-        Bundle args = new Bundle();
         args.putSerializable("ARRAYLIST", resultsList);
         intent.putExtra("BUNDLE", args);
         startActivity(intent); // The method startActivity() is from the imported Activity class (android.support.v7.app.AppCompatActivity, more specifically)
