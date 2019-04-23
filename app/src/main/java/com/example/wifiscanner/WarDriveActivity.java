@@ -17,19 +17,27 @@ import android.widget.Toast;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import java.io.Serializable;
 
 public class WarDriveActivity extends AppCompatActivity implements Serializable {
 
     private WifiManager wifiManager;
-    private ArrayList<String> resultsList = new ArrayList<>();
+    private HashMap<String, String> resultsList = new HashMap<>();
     private List<ScanResult> results;
     private TextView textView;
     private Button buttonPlot;
     private GPSTracker gps;
-    private int tmp;
+    private String tmp;
+    private String pattern = "((.*?)<(.*?)(-.*)<(.*)<(.*))";
+    private Pattern p = Pattern.compile(pattern);
 
     private volatile boolean scan = true;
 
@@ -56,10 +64,9 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
+
         collectWifi();
     }
-
-
 
     private void collectWifi() {
         gps = new GPSTracker(this);
@@ -82,7 +89,7 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
 
                         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)); // What the hell is this
                         wifiManager.startScan(); // Triggers a scan request
-                        Thread.sleep(5000);
+                        Thread.sleep(500);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -109,13 +116,14 @@ public class WarDriveActivity extends AppCompatActivity implements Serializable 
         public void onReceive(Context context, Intent intent) {
             results = wifiManager.getScanResults(); // Gets the latest found wifi hotspot put into object list results
 
+
             unregisterReceiver(this);
 
-            // Populates the arrayList with its scan results
+            // Populates the resultsList with its scan results
             for (ScanResult scanResult : results) {
-                // Displays SSID (the name of the wifi hotspot) and capabilities (Security information)
-                resultsList.add(scanResult.SSID + "<" + latitude + longitude);
+                resultsList.put(scanResult.BSSID, latitude + "" + longitude + "<" + scanResult.SSID + "<" + scanResult.capabilities);
             }
         }
     };
 }
+

@@ -12,13 +12,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private String pattern = "((.*?)<(.*?)(-.*))";
+    /*
+    group(0) - All
+    group(1) - latitude
+    group(2) - longitude
+    group(3) - SSID
+    group(4) - capabilities
+     */
+    private String pattern = "(.*)(-.*)<(.*)<(.*)";
+    private String tmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,17 +57,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
-        ArrayList<String> resultsList = (ArrayList<String>) args.getSerializable("ARRAYLIST");
+        HashMap<String, String> resultsList = (HashMap<String, String>) args.getSerializable("ARRAYLIST");
 
         // Creating pattern object
         Pattern r = Pattern.compile(pattern);
 
-        for (String str : resultsList) {
+        for (Map.Entry<String, String> pair : resultsList.entrySet()) {
             // Creating matcher object
-            Matcher m = r.matcher(str);
+            Matcher m = r.matcher(pair.getValue());
+
             if (m.find()) {
-                LatLng coordinates = new LatLng(Double.parseDouble(m.group(3)), Double.parseDouble(m.group(4)));
-                mMap.addMarker(new MarkerOptions().position(coordinates).title(m.group(2)).draggable(true));
+                tmp = m.group(1);
+                tmp = m.group(2);
+                tmp = m.group(3);
+                tmp = m.group(4);
+                LatLng coordinates = new LatLng(Double.parseDouble(m.group(1)), Double.parseDouble(m.group(2)));
+                mMap.addMarker(new MarkerOptions().position(coordinates).title(m.group(3)).draggable(true));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 16.0f));
             }
         }
