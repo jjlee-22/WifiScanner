@@ -16,12 +16,21 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.Cluster;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -37,6 +46,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String pattern = "(.*)(-.*)<(.*)<(.*)";
     private String tmp;
     private ClusterManager<MyItem> mClusterManager;
+    private HashMap<String, String> resultsList;
+    private HashMap<String, String> accessHashMap = new HashMap<>();
+    private HashMap<String, String> totalHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +62,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -86,14 +88,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         Bundle args = intent.getBundleExtra("BUNDLE");
-        HashMap<String, String> resultsList = (HashMap<String, String>) args.getSerializable("ARRAYLIST");
+
+        String filename = "Info";
+        resultsList = (HashMap<String, String>) args.getSerializable("ARRAYLIST");
+
+        try {
+            accessHashMap = (HashMap) readObjectFromFile(this, filename);
+        } catch (NullPointerException e) {
+            accessHashMap.putAll(resultsList);
+        }
+
+        totalHashMap.putAll(resultsList);
+
+        try {
+            totalHashMap.putAll(accessHashMap);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        writeObjectToFile(this, totalHashMap, filename);
+
+
 
         // Creating pattern object
         Pattern r = Pattern.compile(pattern);
 
         int offsetNum = 0;
 
-        for (Map.Entry<String, String> pair : resultsList.entrySet()) {
+        for (Map.Entry<String, String> pair : totalHashMap.entrySet()) {
             // Creating matcher object
             Matcher m = r.matcher(pair.getValue());
 
@@ -106,7 +128,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (m.find()) {
                 LatLng coordinates = new LatLng(Double.parseDouble(m.group(1)), Double.parseDouble(m.group(2)));
-                //mMap.addMarker(new MarkerOptions().position(coordinates).title(m.group(3)).draggable(true));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 16.0f));
 
                 double lat;
@@ -130,37 +151,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+    public static void writeObjectToFile(Context context, Object object, String filename) {
 
-    private void setUpClusterer() {
-        // Position the map.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+        ObjectOutputStream objectOut = null;
+        try {
 
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+            FileOutputStream fileOut = context.openFileOutput(filename, MapsActivity.MODE_PRIVATE);
+            objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(object);
+            fileOut.getFD().sync();
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
-
-        // Add cluster items (markers) to the cluster manager.
-        addItems();
-    }
-
-    private void addItems() {
-
-        // Set some lat/lng coordinates to start with.
-        double lat = 51.5145160;
-        double lng = -0.1270060;
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat, lng);
-            mClusterManager.addItem(offsetItem);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (objectOut != null) {
+                try {
+                    objectOut.close();
+                } catch (IOException e) {
+                    // do not
+                }
+            }
         }
     }
+
+    public static Object readObjectFromFile(Context context, String filename) {
+
+        ObjectInputStream objectIn = null;
+        Object object = null;
+        try {
+
+            FileInputStream fileIn = context.getApplicationContext().openFileInput(filename);
+            objectIn = new ObjectInputStream(fileIn);
+            object = objectIn.readObject();
+
+        } catch (FileNotFoundException e) {
+            // Do nothing
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (objectIn != null) {
+                try {
+                    objectIn.close();
+                } catch (IOException e) {
+                    // do nowt
+                }
+            }
+        }
+
+        return object;
+    }
+
+
 }

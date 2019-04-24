@@ -110,9 +110,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         // Intent is just simple message object that is used to communicate between android components such as activities, content providers, data, broadcast receivers and services.
         // Learn more about intent here, https://acadgild.com/blog/intent-in-android-introduction
         Intent intent = new Intent(this, MapsActivity.class);
-        Bundle args = new Bundle();
-        args.putSerializable("ARRAYLIST", (Serializable)resultsList);
-        intent.putExtra("BUNDLE", args);
+        //Bundle args = new Bundle();
+        //args.putSerializable("ARRAYLIST", (Serializable)resultsList);
+        //intent.putExtra("BUNDLE", args);
         startActivity(intent); // The method startActivity() is from the imported Activity class (android.support.v7.app.AppCompatActivity, more specifically)
     }
 
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             for (ScanResult scanResult : results) {
                 // Displays SSID (the name of the wifi hotspot) and capabilities (Security information)
                 arrayList.add(scanResult.SSID + "-" + latitude + longitude);
-                resultsList.add(scanResult.SSID + "<" + latitude + longitude);
+                //resultsList.add(scanResult.SSID + "<" + latitude + longitude);
                 adapter.notifyDataSetChanged(); // adapter needs to know that you changes the List in the activity
             }
         }
