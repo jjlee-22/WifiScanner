@@ -52,13 +52,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         // Initializes the button to "listen" for the user to tap on the button
         // Switches to the MapsActivity class
-        buttonPlot = findViewById(R.id.plotBtn);    // Sets buttonPlot to be bound to the UI plotBtn element specified on the XML file
-        buttonPlot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchMapsActivity();
-            }
-        });
+
 
         buttonWar = findViewById(R.id.warBtn);
         buttonWar.setOnClickListener(new View.OnClickListener() {

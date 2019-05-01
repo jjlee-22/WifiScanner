@@ -29,33 +29,18 @@
         tools:layout_editor_absoluteX="29dp" />
 
     <Button
-        android:id="@+id/plotBtn"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom"
-        android:layout_margin="15dp"
-        android:layout_marginTop="101dp"
-        android:layout_marginBottom="113dp"
-        android:text="Plot Wifi on Maps"
-        app:layout_constraintBottom_toTopOf="@+id/scanBtn"
-        app:layout_constraintTop_toBottomOf="@+id/wifiList"
-        tools:layout_editor_absoluteX="29dp" />
-
-    <Button
         android:id="@+id/warBtn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_gravity="bottom"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="7dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="7dp"
         android:text="Start WarDriving"
         app:layout_constraintBottom_toTopOf="@+id/scanBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/plotBtn" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
