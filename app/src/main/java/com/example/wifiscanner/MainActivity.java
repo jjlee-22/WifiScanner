@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private int size = 0;
     private List<ScanResult> results; // Creates a new List object(ScanResult type) called results
     private ArrayList<String> arrayList = new ArrayList<>(); // Creates an ArrayList object(String type) called arrayList
+    private ArrayList<String> arrayList2 = new ArrayList<>(); // Creates an ArrayList object(String type) called arrayList
     private ArrayList<String> resultsList = new ArrayList<>(); // Creates an ArrayList object(String type) called resultsList
     private ArrayAdapter adapter; // Creates a new ArrayAdapter object called ArrayAdapter
 
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         // Treat the rest of this like an else statement
         // Not sure what this does, but I think it's meant to convert data from wifi to a readable listView
         // simple_list_item_1 is android's own XML layout to make the list of found wifi names (not in any of the XML file you made)
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);  // Try this link to learn more "https://guides.codepath.com/android/Using-an-ArrayAdapter-with-ListView"
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter); // listView pulls content from source using the adapter
         scanWifi();
     }
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             // Populates the arrayList with its scan results
             for (ScanResult scanResult : results) {
                 // Displays SSID (the name of the wifi hotspot) and capabilities (Security information)
-                arrayList.add(scanResult.SSID + "-" + latitude + longitude);
+                arrayList.add(scanResult.SSID + "-" + scanResult.capabilities);
                 //resultsList.add(scanResult.SSID + "<" + latitude + longitude);
                 adapter.notifyDataSetChanged(); // adapter needs to know that you changes the List in the activity
             }

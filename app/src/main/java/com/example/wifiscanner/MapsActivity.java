@@ -16,6 +16,8 @@ import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener;
 import com.google.maps.android.clustering.Cluster;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+
 import android.content.Context;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String pattern = "(.*)(-.*)<(.*)<(.*)";
     private String tmp;
     private ClusterManager<MyItem> mClusterManager;
+    private DefaultClusterRenderer<MyItem> mDefaultClusterRenderer;
     private HashMap<String, String> resultsList;
     private HashMap<String, String> accessHashMap = new HashMap<>();
     private HashMap<String, String> totalHashMap = new HashMap<>();
@@ -68,6 +71,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mUiSettings = mMap.getUiSettings();
 
         mClusterManager = new ClusterManager<>(this, mMap);
+        mDefaultClusterRenderer = new DefaultClusterRenderer<>(this, mMap, mClusterManager);
+        mDefaultClusterRenderer.setMinClusterSize(15);
+
+        mClusterManager.setRenderer(mDefaultClusterRenderer);
+
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
 
@@ -145,6 +153,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String snippet = m.group(4);
 
                 MyItem infoWindowItem = new MyItem(lat, lng, title, snippet);
+
                 mClusterManager.addItem(infoWindowItem);
                 offsetNum++;
             }
